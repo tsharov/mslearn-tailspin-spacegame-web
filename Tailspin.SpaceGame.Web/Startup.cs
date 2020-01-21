@@ -1,16 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using TailSpin.SpaceGame.Web.Models;
-using Microsoft.AspNetCore.Http;
 
+// using System;
+// using System.Collections.Generic;
+// using System.Linq;
+// using System.Threading.Tasks;
+// using Microsoft.AspNetCore.Builder;
+// using Microsoft.AspNetCore.Hosting;
+// using Microsoft.AspNetCore.HttpsPolicy;
+// using Microsoft.Extensions.Configuration;
+// using Microsoft.Extensions.DependencyInjection;
+// using Microsoft.Extensions.Hosting;
+// using TailSpin.SpaceGame.Web.Models;
+// using Microsoft.AspNetCore.Http;
+// using Microsoft.AspNetCore.Mvc;
 
 namespace TailSpin.SpaceGame.Web
 {
@@ -26,7 +34,7 @@ namespace TailSpin.SpaceGame.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            //services.AddControllersWithViews();
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -34,13 +42,15 @@ namespace TailSpin.SpaceGame.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
             // Add document stores. These are passed to the HomeController constructor.
             services.AddSingleton<IDocumentDBRepository<Score>>(new LocalDocumentDBRepository<Score>(@"SampleData/scores.json"));
             services.AddSingleton<IDocumentDBRepository<Profile>>(new LocalDocumentDBRepository<Profile>(@"SampleData/profiles.json"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment  env)
         {
             if (env.IsDevelopment())
             {
@@ -55,15 +65,22 @@ namespace TailSpin.SpaceGame.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseRouting();
+            // app.UseRouting();
 
-            app.UseAuthorization();
+            // app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            // app.UseEndpoints(endpoints =>
+            // {
+            //     endpoints.MapControllerRoute(
+            //         name: "default",
+            //         pattern: "{controller=Home}/{action=Index}/{id?}");
+            // });
+
+            app.UseMvc(routes =>
             {
-                endpoints.MapControllerRoute(
+                routes.MapRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
